@@ -6,3 +6,18 @@ requires-python = ">=3.12"
 name = "adventofcode"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "char" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "char", specifier = ">=0.1.2" }]
+
+[[package]]
+name = "char"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/a1/5499c63ba905cd7619de28969a5c9b642addbbda56551b52b47d24e76272/char-0.1.2.tar.gz", hash = "sha256:e6020cf4c81e43484e0b0a1d5d0668a5e56dfff4dadea24629d92a2a3934c79a", size = 19585, upload-time = "2020-08-23T08:20:20.958Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ae/ac/676c193bb5158bfedfe485ed9c27ebcea8bf44c21529cbdf7a7cb4f831c0/char-0.1.2-py2.py3-none-any.whl", hash = "sha256:e2719f713a62134657f51da07ebc6e5c2acb11862f65b8be14e6b596fa345e80", size = 7031, upload-time = "2020-08-23T08:20:19.108Z" },
+]
