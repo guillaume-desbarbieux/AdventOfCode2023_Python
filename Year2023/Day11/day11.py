@@ -1,14 +1,16 @@
-from os import MFD_ALLOW_SEALING
-from pickletools import read_stringnl_noescape
-
 from Year2023.utils import read_file
 
-
-def path(coord1, coord2) -> int:
-    a, b = coord1
-    c, d = coord2
-    return abs(a - c) + abs(b - d)
-
+def extended_path(coord1, coord2, extended_rows, extended_cols, expansion):
+    i1, j1 = coord1
+    i2, j2 = coord2
+    path = abs(i1 - i2) + abs(j1-j2)
+    for row in extended_rows:
+        if (i1 <= row <= i2) or (i2 <= row <= i1):
+            path += expansion - 1
+    for col in extended_cols:
+        if (j1 <= col <= j2) or (j2 <= col <= j1):
+            path += expansion - 1
+    return path
 
 def get_empty_rows_ans_cols(sky):
     empty_rows = []
@@ -32,50 +34,19 @@ def is_empty(row):
             return False
     return True
 
-
-def extend_rows(sky, rows):
-    extended_sky = []
-    for i in range(len(sky)-1, -1, -1):
-        extended_sky.append(sky[i])
-        if i in rows:
-            extended_sky.append(sky[i])
-    return extended_sky
-
-
-def extend_cols(sky, cols):
-    extended_sky = []
-    for i in range(len(sky)):
-        extended_sky.append([])
-
-    for j in range(len(sky[0])-1, -1, -1):
-        for i in range(len(sky)):
-            extended_sky[i].append(sky[i][j])
-            if j in cols:
-                extended_sky[i].append(sky[i][j])
-    return extended_sky
-
-
-def extend(sky, rows, cols):
-    rows_extended_sky = extend_rows(sky, rows)
-    return extend_cols(rows_extended_sky, cols)
-
-
-
-
 if __name__ == "__main__":
     sky = read_file("puzzle.txt")
     rows,cols = get_empty_rows_ans_cols(sky)
-    extended_sky = extend(sky, rows, cols)
 
     galaxies = []
-    for i in range(len(extended_sky)):
-        for j in range(len(extended_sky[i])):
-            if extended_sky[i][j] == '#':
+    for i in range(len(sky)):
+        for j in range(len(sky[i])):
+            if sky[i][j] == '#':
                 galaxies.append((i, j))
 
     sum = 0
     for i in range(len(galaxies) - 1):
         for j in range(i + 1, len(galaxies)):
-            sum += path(galaxies[i], galaxies[j])
+            sum += extended_path(galaxies[i], galaxies[j], rows, cols, 1000000)
 
     print(sum)
