@@ -62,10 +62,32 @@ def resolve_part_1(rows):
     return sum
 
 
-def count_arrangement(springs, blocks):
-    indexBlock = 0
+def place_for_block(spring, block):
+    for i in range(block):
+        if spring[i] == '.':
+            return False
+    return True
+
+
+def count_arrangement(springs, blocks, indexBlock):
+    if blocks[indexBlock] > len(springs):
+        return 0
+
     for i in range(len(springs)):
+        if blocks[indexBlock] > len(springs) - i:
+            return 0
         char = springs[i]
+        if char == '#':
+            if place_for_block(springs[i:], blocks[indexBlock]):
+                i += blocks[indexBlock] ### peut-être -1 ou pas ?
+                indexBlock += 1
+                if indexBlock >= len(blocks):
+                    return 1
+                continue
+            else:
+                return 0
+        if char == '?':
+            return count_arrangement([*springs[i + 1:]], blocks, indexBlock) + count_arrangement(['#', *springs[i+1:]], blocks, indexBlock)
 
 
 
@@ -74,15 +96,13 @@ def resolve_part_2(rows):
 
     for row in unfold_rows:
         springs,blocks = row
-        print(count_arrangement(springs, blocks))
-
-    return unfold_rows
+        print(count_arrangement(springs, blocks, 0))
 
 
 
 if __name__ == "__main__":
     rows = parse_puzzle("puzzle.txt")
-    print(resolve_part_1(rows))
+    #print(resolve_part_1(rows))
     print(resolve_part_2(rows))
 
 
