@@ -44,21 +44,45 @@ def list_arrangement(left):
     except ValueError:
         return [left]
 
+
 def unfold_left(array):
     return array + ['?'] + array + ['?'] + array + ['?'] + array + ['?'] + array
+
 
 def unfold_right(array):
     return array + array + array + array + array
 
 
-if __name__ == "__main__":
-    rows = parse_puzzle("puzzle.txt")
-
+def resolve_part_1(rows):
     sum = 0
     for row in rows:
-        row = (unfold_left(row[0]), unfold_right(row[1]))
         for arrangement in list_arrangement(row[0]):
             if check_arrangement((arrangement, row[1])):
                 sum += 1
-                if sum%1000 == 0:
-    print(sum)
+    return sum
+
+
+def count_arrangement(springs, blocks):
+    indexBlock = 0
+    for i in range(len(springs)):
+        char = springs[i]
+
+
+
+def resolve_part_2(rows):
+    unfold_rows = [(unfold_left(row[0]), unfold_right(row[1])) for row in rows]
+
+    for row in unfold_rows:
+        springs,blocks = row
+        print(count_arrangement(springs, blocks))
+
+    return unfold_rows
+
+
+
+if __name__ == "__main__":
+    rows = parse_puzzle("puzzle.txt")
+    print(resolve_part_1(rows))
+    print(resolve_part_2(rows))
+
+
