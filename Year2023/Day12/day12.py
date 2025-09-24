@@ -44,13 +44,21 @@ def list_arrangement(left):
     except ValueError:
         return [left]
 
+def unfold_left(array):
+    return array + ['?'] + array + ['?'] + array + ['?'] + array + ['?'] + array
+
+def unfold_right(array):
+    return array + array + array + array + array
+
 
 if __name__ == "__main__":
     rows = parse_puzzle("puzzle.txt")
 
     sum = 0
     for row in rows:
+        row = (unfold_left(row[0]), unfold_right(row[1]))
         for arrangement in list_arrangement(row[0]):
             if check_arrangement((arrangement, row[1])):
                 sum += 1
+                if sum%1000 == 0:
     print(sum)
