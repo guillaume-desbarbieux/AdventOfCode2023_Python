@@ -62,43 +62,91 @@ def resolve_part_1(rows):
     return sum
 
 
-def place_for_block(spring, block):
-    for i in range(block):
+def place_for_block(row, position, block_index):
+    spring, block = row
+    for i in range(position, position + block[block_index] + 1):
         if spring[i] == '.':
             return False
     return True
 
 
-def count_arrangement(springs, blocks, indexBlock):
-    if blocks[indexBlock] > len(springs):
+def no_more_broken(springs : List[char], position : int):
+    for spring in springs[:position]:
+        if spring == '#':
+            #print("Il reste un broken, raté")
+            return 0
+    #print("Pas de broken restant, super")
+    return 1
+
+
+def sum_from(blocks, block_index):
+    sum = 0
+    for i in range(block_index, len(blocks)):
+        sum += blocks[i]
+    return sum
+
+
+def count_arrangement(row, position, block_index):
+    springs, blocks = row
+    #print("".join(springs))
+    #print(" ".join(map(str,blocks)))
+    #print(f"Position {position}, Block index {block_index}")
+
+
+    #Si on a parcouru tous les springs, on vérifie qu'on a placé tous les blocs
+    if position >= len(springs):
+        if block_index >= len(blocks):
+            #print("plus, de springs, plus de blocs, on a fini")
+            return 1
+        else:
+            #print("plus de springs, mais encore des blocs")
+            return 0
+
+    #Si on a placé tous les blocs, on vérifie qu'il ne reste plus de broken springs
+    if block_index >= len(blocks):
+        #print("plus de blocs, regardons les springs restants")
+        return no_more_broken(springs, position)
+
+    #On vérifie qu'il reste suffisamment de place pour tous les blocs restants (Sum = nombre de brokens à placer ; en ajoutant les '.' minimaux entre chaque groupe de brokens
+    #print(f"poser {sum_from(blocks, block_index)} + {len(blocks) - block_index - 1} dans {len(springs) - position}")
+
+    if sum_from(blocks, block_index) + len(blocks) - 1 - block_index > len(springs) - position:
+        #print("la places restante est insuffisante")
         return 0
 
-    for i in range(len(springs)):
-        if blocks[indexBlock] > len(springs) - i:
+    #Si '.' on regarde le spring suivant
+    if springs[position] == '.':
+        "Le spring est un '.', on passe au suivant"
+        return count_arrangement(row, position + 1, block_index)
+
+    #Si # on regarde après le bloc de '#' suivi de '.'
+    if springs[position] == '#':
+        if place_for_block(row, position, block_index):
+            #print("Le spring est '#', on pose le bloc")
+            return count_arrangement(row, position + blocks[block_index] + 1, block_index + 1)
+        else:
             return 0
-        char = springs[i]
-        if char == '#':
-            if place_for_block(springs[i:], blocks[indexBlock]):
-                i += blocks[indexBlock] ### peut-être -1 ou pas ?
-                indexBlock += 1
-                if indexBlock >= len(blocks):
-                    return 1
-                continue
-            else:
-                return 0
-        if char == '?':
-            return count_arrangement([*springs[i + 1:]], blocks, indexBlock) + count_arrangement(['#', *springs[i+1:]], blocks, indexBlock)
+
+    #Si '?' on additionne les deux arrangements possibles.
+    if springs[position] == '?':
+        if place_for_block(row, position, block_index):
+            #print("Le spring est '?', on regarde les deux arrangements possibles")
+            return count_arrangement(row, position + 1, block_index) + count_arrangement(row, position + blocks[block_index] + 1, block_index + 1)
+        else:
+            return count_arrangement(row, position + 1, block_index)
 
 
 
 def resolve_part_2(rows):
     unfold_rows = [(unfold_left(row[0]), unfold_right(row[1])) for row in rows]
+    sum = 0
+    memo = {}
+    print(count_arrangement(unfold_rows[0], 0, 0))
+    print(count_arrangement(unfold_rows[1], 0, 0))
 
-    for row in unfold_rows:
-        springs,blocks = row
-        print(count_arrangement(springs, blocks, 0))
-
-
+    #for row in unfold_rows:
+    #    sum+= count_arrangement(row, 0, 0)
+    #return sum
 
 if __name__ == "__main__":
     rows = parse_puzzle("puzzle.txt")
